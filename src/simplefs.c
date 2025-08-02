@@ -13,6 +13,7 @@ static uint32_t *data_bitmap;
 static Inode *inode_table;
 static void *data_area;
 static uint32_t current_dir_inode_num;
+static char current_path_string[256];
 
 // --- FUNÇÕES AUXILIARES DE BAIXO NÍVEL ---
 
@@ -133,6 +134,7 @@ void fs_mount() {
     data_area = &ram_disk[sb.data_area_start_block * BLOCK_SIZE];
 
     current_dir_inode_num = sb.root_inode_number;
+    strcpy(current_path_string, "/");
 }
 
 void fs_ls() {
@@ -295,14 +297,38 @@ int fs_touch(const char* filename) {
 int fs_cd(const char* path) {
     if (strcmp(path, "/") == 0) {
         current_dir_inode_num = sb.root_inode_number;
+        strcpy(current_path_string, "/");
         return 0;
     }
     
     DirectoryEntry entry;
     int inode_num = find_entry(path, &entry);
 
-    if (inode_num != -1 && inode_table[inode_num].type == 2) {
+    if (inode_num != -1 && inode_table[inode_num].type == ATTR_DIRECTORY) {
         current_dir_inode_num = inode_num;
+
+        // Lógica para atualizar a string do caminho
+        if (strcmp(path, "..") == 0) {
+            // Se for '..', remove o último componente do caminho
+            uint32_t len = strlen(current_path_string);
+            if (len > 1) { // Não altera se já for "/"
+                for (int i = len - 2; i >= 0; i--) {
+                    if (current_path_string[i] == '/') {
+                        current_path_string[i+1] = '\0';
+                        break;
+                    }
+                }
+            }
+        } else {
+            // Se for um diretório normal, adiciona ao caminho
+            if (strcmp(current_path_string, "/") != 0) {
+                strcat(current_path_string, path);
+            } else {
+                // Evita "//" no início
+                strcpy(current_path_string + 1, path);
+            }
+            strcat(current_path_string, "/");
+        }
         return 0;
     }
     
@@ -514,4 +540,8 @@ int fs_rm(const char* filename) {
     uart_puts("' deletado.\n");
 
     return 0;
+}
+
+const char* fs_get_current_path() {
+    return current_path_string;
 }

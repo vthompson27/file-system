@@ -69,4 +69,6 @@ int fs_write(const char* filename, const char* text);
 // Deleta um arquivo
 int fs_rm(const char* filename);
 
+const char* fs_get_current_path();
+
 #endif // SIMPLEFS_H

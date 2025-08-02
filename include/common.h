@@ -46,4 +46,13 @@ void* memcpy(void *dest, const void *src, uint32_t n);
  */
 void* memset(void *s, int c, uint32_t n);
 
+/**
+ * @brief Concatena a string de origem ao final da string de destino.
+ * @param dest A string de destino.
+ * @param src A string de origem.
+ * @return Um ponteiro para a string de destino.
+ */
+char* strcat(char *dest, const char *src);
+
+
 #endif // COMMON_H
