@@ -46,3 +46,42 @@ char* strcat(char *dest, const char *src) {
     strcpy(p, src);
     return dest;
 }
+
+void itoa(int n, char* buffer) {
+    int i = 0;
+    int is_negative = 0;
+
+    if (n == 0) {
+        buffer[i++] = '0';
+        buffer[i] = '\0';
+        return;
+    }
+
+    if (n < 0) {
+        is_negative = 1;
+        n = -n;
+    }
+
+    while (n != 0) {
+        int rem = n % 10;
+        buffer[i++] = rem + '0';
+        n = n / 10;
+    }
+
+    if (is_negative) {
+        buffer[i++] = '-';
+    }
+
+    buffer[i] = '\0';
+
+    // Inverte a string
+    int start = 0;
+    int end = i - 1;
+    while (start < end) {
+        char temp = buffer[start];
+        buffer[start] = buffer[end];
+        buffer[end] = temp;
+        start++;
+        end--;
+    }
+}

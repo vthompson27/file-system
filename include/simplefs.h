@@ -71,4 +71,6 @@ int fs_rm(const char* filename);
 
 const char* fs_get_current_path();
 
+void fs_stat();
+
 #endif // SIMPLEFS_H
