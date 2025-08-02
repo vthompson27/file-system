@@ -54,5 +54,11 @@ void* memset(void *s, int c, uint32_t n);
  */
 char* strcat(char *dest, const char *src);
 
+/**
+ * @brief Converte um inteiro para uma string.
+ * @param n O número a ser convertido.
+ * @param buffer O buffer onde a string será armazenada.
+ */
+void itoa(int n, char* buffer);
 
 #endif // COMMON_H

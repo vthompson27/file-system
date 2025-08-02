@@ -65,6 +65,7 @@ void shell_start() {
             uart_puts("  write <f> <t> - Escreve/anexa texto <t> ao arquivo <f>\n");
             uart_puts("  cd <n>    - Muda de diretorio (use '..' para voltar)\n");
             uart_puts("  rm <n>    - Deleta um arquivo ou diretorio vazio\n");
+            uart_puts("  stat      - Mostra estatisticas de uso do disco\n");
             uart_puts("  format    - Re-formata o sistema de arquivos\n");
         } else if (strcmp(argv[0], "ls") == 0) {
             fs_ls();
@@ -102,7 +103,9 @@ void shell_start() {
         } else if (strcmp(argv[0], "rm") == 0) {
             if (argc > 1) fs_rm(argv[1]);
             else uart_puts("Uso: rm <nome_do_arquivo>\n");
-        } else if (strcmp(argv[0], "format") == 0) {
+        } else if (strcmp(argv[0], "stat") == 0) {
+            fs_stat();
+        }else if (strcmp(argv[0], "format") == 0) {
             uart_puts("Formatando o sistema de arquivos...\n");
             fs_format();
             fs_mount();

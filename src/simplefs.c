@@ -545,3 +545,59 @@ int fs_rm(const char* filename) {
 const char* fs_get_current_path() {
     return current_path_string;
 }
+
+void fs_stat() {
+    uint32_t used_inodes = 0;
+    for (int i = 0; i < NUM_INODES; i++) {
+        if ((inode_bitmap[i / 32] >> (i % 32)) & 1) {
+            used_inodes++;
+        }
+    }
+
+    uint32_t used_data_blocks = 0;
+    for (int i = 0; i < NUM_DATA_BLOCKS; i++) {
+        if ((data_bitmap[i / 32] >> (i % 32)) & 1) {
+            used_data_blocks++;
+        }
+    }
+    
+    // Calcula o espaço útil (descontando os metadados)
+    uint32_t metadata_blocks = sb.data_area_start_block;
+    uint32_t user_blocks_used = used_data_blocks - metadata_blocks;
+    uint32_t total_user_blocks = NUM_DATA_BLOCKS - metadata_blocks;
+    
+    char buffer[32];
+
+    uart_puts("--- Estatisticas do Sistema de Arquivos ---\n");
+    
+    // Estatísticas de Inodes
+    itoa(used_inodes, buffer);
+    uart_puts("Inodes utilizados: ");
+    uart_puts(buffer);
+    uart_puts(" / ");
+    itoa(NUM_INODES, buffer);
+    uart_puts(buffer);
+    uart_puts("\n");
+
+    // Estatísticas de Blocos de Dados
+    itoa(user_blocks_used, buffer);
+    uart_puts("Blocos de dados utilizados: ");
+    uart_puts(buffer);
+    uart_puts(" / ");
+    itoa(total_user_blocks, buffer);
+    uart_puts(buffer);
+    uart_puts("\n");
+
+    // Estatísticas de Espaço em Bytes
+    itoa(user_blocks_used * BLOCK_SIZE, buffer);
+    uart_puts("Espaco utilizado: ");
+    uart_puts(buffer);
+    uart_puts(" Bytes\n");
+    
+    itoa(total_user_blocks * BLOCK_SIZE, buffer);
+    uart_puts("Espaco total (util): ");
+    uart_puts(buffer);
+    uart_puts(" Bytes\n");
+
+    uart_puts("-------------------------------------------\n");
+}
