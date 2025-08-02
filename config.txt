@@ -1,0 +1,16 @@
+# Garante que o processador inicie em modo 32-bit (AArch32).
+arm_64bit=0
+
+# Nome do arquivo do kernel que o firmware deve carregar (gerado pelo Makefile).
+kernel=kernel7.img
+
+# Endereço de memória para onde o kernel deve ser carregado.
+# DEVE ser o mesmo endereço definido no linker.ld (0x8000).
+kernel_address=0x8000
+
+# Habilita a UART principal (PL011) nos pinos GPIO 14 e 15.
+# Essencial para o nosso driver uart.c funcionar no hardware real.
+enable_uart=1
+
+# Impede que o firmware passe tags de inicialização para o nosso kernel.
+disable_commandline_tags=1
