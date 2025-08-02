@@ -60,6 +60,7 @@ void shell_start() {
             uart_puts("  cat <n>   - Mostra o conteudo de um arquivo\n");
             uart_puts("  write <n> <t> - Escreve/anexa texto a um arquivo\n");
             uart_puts("  cd <n>    - Muda de diretorio (use '..' para voltar)\n");
+            uart_puts("  rm <n>    - Deleta um arquivo ou diretorio vazio\n");
             uart_puts("  format    - Re-formata o sistema de arquivos\n");
         } else if (strcmp(argv[0], "ls") == 0) {
             fs_ls();
@@ -83,7 +84,11 @@ void shell_start() {
             fs_format();
             fs_mount();
             uart_puts("Pronto.\n");
-        } else {
+        }else if (strcmp(argv[0], "rm") == 0) {
+            if (argc > 1) fs_rm(argv[1]);
+            else uart_puts("Uso: rm <nome_do_arquivo>\n");
+        }  
+        else {
             uart_puts("Comando desconhecido: ");
             uart_puts(argv[0]);
             uart_puts("\n");
