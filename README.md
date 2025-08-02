@@ -8,24 +8,31 @@ This project is a bare-metal learning environment for developing a simple file s
 - Direct interaction with hardware
 - UART serial output for debugging
 - Basic memory and I/O routines
-- Simple custom file system planned (FAT-like or log-structured)
+- Simple custom file system planned (inode based)
 
 ## 🧱 Project Structure
 
 ```
 .
 ├── Makefile           # Build system using arm-none-eabi toolchain
-├── src/               # Source files (C and assembly)
+├── src/               # Source files
 │   ├── kernel.c       # Entry point
-│   ├── utils.S        # Basic hardware routines (put32, get32, delay)
-│   ├── uart.c         # UART output
-│   ├── fs.c           # File system logic (in progress)
+│   ├── common.c       # Utility functions
+│   ├── shell.c        # Shell operation logic
+│   ├── uart.c         # UART operations
+│   ├── simplefs.c     # File system logic
 │   └── ...
 ├── include/           # Header files
-│   └── peripherals/   # GPIO, UART, etc.
+│   └── common.h/
+│   └── shell.h/
+│   └── simplefs.h
+│   └── uart.h/
 ├── build/             # Build output directory
 ├── kernel.img         # Final image to boot on the Pi
 ├── config.txt         # Boot configuration for Pi firmware
+├── bootcode.bin       # GPU bootloader
+├── start.elf          # GPU firmware
+├── linker.ld          # Linker script
 └── README.md
 ```
 
@@ -36,8 +43,6 @@ This project is a bare-metal learning environment for developing a simple file s
 - Raspberry Pi 3
 - Cross compiler: `arm-none-eabi-gcc`
 - USB-to-TTL Serial cable
-- External LED (optional for debugging)
-- SD card (FAT32, MBR partitioned)
 - Files from a Raspbian image: `bootcode.bin`, `start.elf`
 
 ### 2. Build
@@ -61,10 +66,10 @@ Example `config.txt`:
 
 ```ini
 kernel=kernel.img
-enable_uart=1
 arm_64bit=0
 disable_commandline_tags=1
-kernel_old=1
+kernel_address=0x8000
+core_freq=250
 ```
 
 ### 4. Run
@@ -85,27 +90,18 @@ screen /dev/tty.usbserial-XXXXX 115200
 
 - [x] UART and GPIO working
 - [x] Basic memory routines
-- [ ] Disk block abstraction
-- [ ] File system layout (in-memory prototype)
-- [ ] Directory structure and file metadata
-- [ ] Read/write file operations
+- [x] Disk block abstraction
+- [x] File system layout (in-memory prototype)
+- [x] Directory structure and file metadata
+- [x] Read/write file operations
 - [ ] Persisting to SD card
-
----
-
-## 🧪 Testing
-
-We will use UART for most logging. Later stages will include tests for:
-
-- Block allocation
-- File integrity
-- Directory resolution
 
 ---
 
 ## 💡 Resources
 
 - [s-matyukevich/raspberry-pi-os](https://github.com/s-matyukevich/raspberry-pi-os)
+- [bztsrc/raspi3-tutorial](https://github.com/bztsrc/raspi3-tutorial)
 - [BCM2837 ARM Peripherals Manual](https://cs140e.sergio.bz/docs/BCM2837-ARM-Peripherals.pdf)
 - [Raspberry Pi GPIO Pinout](https://pinout.xyz/)
 

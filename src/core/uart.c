@@ -83,3 +83,41 @@ void uart_puts(const char *s) {
         uart_putc(*s++);
     }
 }
+
+void uart_puts_right_aligned(int num, int width) {
+    char buf[16];
+    itoa(num, buf);
+    int len = strlen(buf);
+    for (int i = 0; i < width - len; i++) {
+        uart_puts(" ");
+    }
+    uart_puts(buf);
+}
+
+void uart_puts_aligned(const char* text, int num1, int num2, const char* suffix) {
+    char buf1[16], buf2[16];
+    itoa(num1, buf1);
+    itoa(num2, buf2);
+
+    int text_len = strlen(text);
+    int num1_len = strlen(buf1);
+    int num2_len = strlen(buf2);
+    int suffix_len = suffix ? strlen(suffix) : 0;
+
+    // Espaços entre texto e números:
+    // total = LINE_WIDTH - text_len - num1_len - (3 + num2_len + suffix_len)
+    // 3 = espaço + '/' + espaço
+    int spaces = LINE_WIDTH - text_len - num1_len - num2_len - suffix_len - 3;
+
+    if (spaces < 1) spaces = 1;
+
+    uart_puts(text);
+    for (int i = 0; i < spaces; i++) uart_puts(" ");
+    uart_puts(buf1);
+    if (num2 >= 0) {
+        uart_puts(" / ");
+        uart_puts(buf2);
+    }
+    if (suffix) uart_puts(suffix);
+    uart_puts("\n");
+}

@@ -40,9 +40,7 @@ void* memset(void *s, int c, uint32_t n) {
 }
 
 char* strcat(char *dest, const char *src) {
-    // Encontra o final da string de destino
     char *p = dest + strlen(dest);
-    // Copia a string de origem para o final
     strcpy(p, src);
     return dest;
 }
@@ -74,7 +72,6 @@ void itoa(int n, char* buffer) {
 
     buffer[i] = '\0';
 
-    // Inverte a string
     int start = 0;
     int end = i - 1;
     while (start < end) {
