@@ -2,7 +2,7 @@
 arm_64bit=0
 
 # Nome do arquivo do kernel a ser carregado.
-kernel=kernel7.img
+kernel=kernel.img
 
 # Endereço de memória para o kernel.
 kernel_address=0x8000

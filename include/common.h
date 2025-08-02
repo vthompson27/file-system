@@ -2,6 +2,7 @@
 #define COMMON_H
 
 #include <stdint.h>
+#include "uart.h"
 
 // Definição da macro NULL para nosso ambiente bare-metal
 #define NULL ((void*)0)
