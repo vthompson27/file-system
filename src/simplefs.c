@@ -13,6 +13,7 @@ static uint32_t *data_bitmap;
 static Inode *inode_table;
 static void *data_area;
 static uint32_t current_dir_inode_num;
+static char current_path_string[256];
 
 // --- FUNÇÕES AUXILIARES DE BAIXO NÍVEL ---
 
@@ -133,6 +134,7 @@ void fs_mount() {
     data_area = &ram_disk[sb.data_area_start_block * BLOCK_SIZE];
 
     current_dir_inode_num = sb.root_inode_number;
+    strcpy(current_path_string, "/");
 }
 
 void fs_ls() {
@@ -295,14 +297,38 @@ int fs_touch(const char* filename) {
 int fs_cd(const char* path) {
     if (strcmp(path, "/") == 0) {
         current_dir_inode_num = sb.root_inode_number;
+        strcpy(current_path_string, "/");
         return 0;
     }
     
     DirectoryEntry entry;
     int inode_num = find_entry(path, &entry);
 
-    if (inode_num != -1 && inode_table[inode_num].type == 2) {
+    if (inode_num != -1 && inode_table[inode_num].type == ATTR_DIRECTORY) {
         current_dir_inode_num = inode_num;
+
+        // Lógica para atualizar a string do caminho
+        if (strcmp(path, "..") == 0) {
+            // Se for '..', remove o último componente do caminho
+            uint32_t len = strlen(current_path_string);
+            if (len > 1) { // Não altera se já for "/"
+                for (int i = len - 2; i >= 0; i--) {
+                    if (current_path_string[i] == '/') {
+                        current_path_string[i+1] = '\0';
+                        break;
+                    }
+                }
+            }
+        } else {
+            // Se for um diretório normal, adiciona ao caminho
+            if (strcmp(current_path_string, "/") != 0) {
+                strcat(current_path_string, path);
+            } else {
+                // Evita "//" no início
+                strcpy(current_path_string + 1, path);
+            }
+            strcat(current_path_string, "/");
+        }
         return 0;
     }
     
@@ -427,4 +453,95 @@ int fs_write(const char* filename, const char* text) {
     uart_puts("'.\n");
 
     return 0;
+}
+
+int fs_rm(const char* filename) {
+    // Proibir a exclusão de "." e ".."
+    if (strcmp(filename, ".") == 0 || strcmp(filename, "..") == 0) {
+        uart_puts("Erro: Nao e possivel deletar '.' ou '..'.\n");
+        return -1;
+    }
+
+    uint32_t entry_block_num; // Bloco onde a entrada de diretório está
+    uint32_t entry_index;     // Índice da entrada dentro do bloco
+
+    // 1. Encontrar a entrada de diretório para obter o número do inode
+    DirectoryEntry entry;
+    int inode_num = -1;
+    int found = 0;
+    Inode dir_inode = inode_table[current_dir_inode_num];
+    DirectoryEntry dir_block_buffer[BLOCK_SIZE / sizeof(DirectoryEntry)];
+
+    for (int i = 0; i < MAX_DIRECT_POINTERS && !found; i++) {
+        if (dir_inode.direct_pointers[i] != 0) {
+            read_block(dir_inode.direct_pointers[i], dir_block_buffer);
+            for (uint32_t j = 0; j < (BLOCK_SIZE / sizeof(DirectoryEntry)); j++) {
+                if (dir_block_buffer[j].filename[0] != '\0' && strcmp(dir_block_buffer[j].filename, filename) == 0) {
+                    entry = dir_block_buffer[j];
+                    inode_num = entry.inode_number;
+                    entry_block_num = dir_inode.direct_pointers[i];
+                    entry_index = j;
+                    found = 1;
+                    break;
+                }
+            }
+        }
+    }
+
+    if (!found) {
+        uart_puts("Erro: Arquivo ou diretorio nao encontrado.\n");
+        return -1;
+    }
+
+    // 2. Ler o inode do item a ser deletado
+    Inode target_inode = inode_table[inode_num];
+
+    // 3. Lógica de deleção baseada no tipo (arquivo ou diretório)
+    if (target_inode.type == ATTR_DIRECTORY) {
+        // Lógica para deletar um diretório
+        int entry_count = 0;
+        DirectoryEntry content_buffer[BLOCK_SIZE / sizeof(DirectoryEntry)];
+        for (int i = 0; i < MAX_DIRECT_POINTERS; i++) {
+            if (target_inode.direct_pointers[i] != 0) {
+                read_block(target_inode.direct_pointers[i], content_buffer);
+                for (uint32_t j = 0; j < (BLOCK_SIZE / sizeof(DirectoryEntry)); j++) {
+                    if (content_buffer[j].filename[0] != '\0') {
+                        entry_count++;
+                    }
+                }
+            }
+        }
+        
+        // Um diretório vazio tem exatamente 2 entradas: "." e ".."
+        if (entry_count > 2) {
+            uart_puts("Erro: O diretorio nao esta vazio.\n");
+            return -3;
+        }
+    }
+
+    // 4. Se for um arquivo ou um diretório vazio, a lógica de liberação é a mesma:
+    // Liberar os blocos de dados no bitmap de dados
+    for (int i = 0; i < MAX_DIRECT_POINTERS; i++) {
+        if (target_inode.direct_pointers[i] != 0) {
+            clear_bitmap_bit(data_bitmap, target_inode.direct_pointers[i]);
+        }
+    }
+
+    // Liberar o inode no bitmap de inodes
+    clear_bitmap_bit(inode_bitmap, inode_num);
+
+    // 5. Apagar a entrada no diretório pai
+    read_block(entry_block_num, dir_block_buffer);
+    dir_block_buffer[entry_index].filename[0] = '\0'; // Marca como vazia
+    write_block(entry_block_num, dir_block_buffer);
+
+    uart_puts("Item '");
+    uart_puts(filename);
+    uart_puts("' deletado.\n");
+
+    return 0;
+}
+
+const char* fs_get_current_path() {
+    return current_path_string;
 }

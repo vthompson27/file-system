@@ -10,6 +10,8 @@
 #define NUM_DATA_BLOCKS 8192 // 8192 * 512 bytes = 4MB de disco
 #define MAX_DIRECT_POINTERS 12
 #define FS_MAGIC 0x5346534A // "SFSJ" em ASCII (Simple File System J)
+#define ATTR_FILE         1
+#define ATTR_DIRECTORY    2
 
 // --- Estruturas de Dados ---
 
@@ -63,5 +65,10 @@ int fs_cat(const char* filename);
 
 // Escreve/anexa texto a um arquivo
 int fs_write(const char* filename, const char* text);
+
+// Deleta um arquivo
+int fs_rm(const char* filename);
+
+const char* fs_get_current_path();
 
 #endif // SIMPLEFS_H

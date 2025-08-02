@@ -38,3 +38,11 @@ void* memset(void *s, int c, uint32_t n) {
     }
     return s;
 }
+
+char* strcat(char *dest, const char *src) {
+    // Encontra o final da string de destino
+    char *p = dest + strlen(dest);
+    // Copia a string de origem para o final
+    strcpy(p, src);
+    return dest;
+}
