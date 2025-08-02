@@ -43,7 +43,7 @@ $(ELFTARGET): $(OBJECTS) linker.ld
 	@$(LD) -T linker.ld -o $(ELFTARGET) $(OBJECTS)
 
 # Compila arquivos C
-$(BUILDDIR)/%.o: $(SRCDIR)%.c
+$(BUILDDIR)/%.o: $(SRCDIR)/%.c
 	@mkdir -p $(BUILDDIR)
 	@echo "  CC       $< -> $@"
 	@$(CC) $(CFLAGS) -c $< -o $@
@@ -59,13 +59,13 @@ clean:
 	@echo "  CLEAN"
 	@rm -rf $(BUILDDIR) $(TARGET)
 
-# Regra para rodar com QEMU (conectando à UART principal PL011)
+# Regra para rodar com QEMU (conectando o terminal à Mini UART correta)
 run-qemu: all
 	@echo "  RUNNING  QEMU"
-	@qemu-system-arm -M raspi2b -kernel $(TARGET) -serial stdio
+	@qemu-system-arm -M raspi2b -kernel $(TARGET) -chardev stdio,id=char0 -device aux-uart,chardev=char0
 
-# Regra para depurar com GDB (conectando à UART principal PL011)
+# Regra para depurar com GDB (conectando o terminal à Mini UART correta)
 debug-qemu: all
-	@qemu-system-arm -M raspi2b -kernel $(ELFTARGET) -serial stdio -S -s
+	@qemu-system-arm -M raspi2b -kernel $(ELFTARGET) -chardev stdio,id=char0 -device aux-uart,chardev=char0 -S -s
 
 .PHONY: all clean run-qemu debug-qemu

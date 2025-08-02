@@ -1,16 +1,14 @@
-# Garante que o processador inicie em modo 32-bit (AArch32).
+# Garante que o processador inicie em modo 32-bit.
 arm_64bit=0
 
-# Nome do arquivo do kernel que o firmware deve carregar (gerado pelo Makefile).
+# Nome do arquivo do kernel a ser carregado.
 kernel=kernel7.img
 
-# Endereço de memória para onde o kernel deve ser carregado.
-# DEVE ser o mesmo endereço definido no linker.ld (0x8000).
+# Endereço de memória para o kernel.
 kernel_address=0x8000
 
-# Habilita a UART principal (PL011) nos pinos GPIO 14 e 15.
-# Essencial para o nosso driver uart.c funcionar no hardware real.
-enable_uart=1
+# Trava a frequência do core da VPU em 250MHz para estabilizar o clock da Mini UART.
+core_freq=250
 
-# Impede que o firmware passe tags de inicialização para o nosso kernel.
+# Impede que o firmware passe tags de inicialização.
 disable_commandline_tags=1
