@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-// --- Configurações ---
+// Configurações
 #define BLOCK_SIZE 512
 #define MAX_FILENAME_LEN 28
 #define NUM_INODES 128
@@ -13,7 +13,7 @@
 #define ATTR_FILE 1
 #define ATTR_DIRECTORY 2
 
-// --- Estruturas ---
+// Estruturas
 
 typedef struct {
     uint32_t magic_number;

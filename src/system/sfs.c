@@ -3,10 +3,10 @@
 #include "uart.h"
 #include "fs_defs.h"
 
-// --- O "DISCO" VIRTUAL ---
+// O "DISCO" VIRTUAL
 unsigned char ram_disk[NUM_DATA_BLOCKS * BLOCK_SIZE];
 
-// --- ESTADO GLOBAL DO SISTEMA DE ARQUIVOS ---
+// ESTADO GLOBAL DO SISTEMA DE ARQUIVOS
 Superblock sb;
 uint32_t *inode_bitmap;
 uint32_t *data_bitmap;
@@ -15,7 +15,7 @@ void *data_area;
 uint32_t current_dir_inode_num;
 char current_path_string[256];
 
-// --- FUNÇÕES AUXILIARES DE BAIXO NÍVEL ---
+// FUNÇÕES AUXILIARES DE BAIXO NÍVEL
 
 // Lê um bloco do disco para um buffer
 void read_block(uint32_t block_num, void* buffer) {
@@ -57,7 +57,7 @@ int find_free_data_block() {
     return -1; // Nenhum bloco de dados livre
 }
 
-// --- FUNÇÕES AUXILIARES DO DISCO VIRTUAL ---
+// FUNÇÕES AUXILIARES DO DISCO VIRTUAL
 
 void fs_format() {
     // 1. Configurar o superbloco

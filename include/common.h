@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include "uart.h"
 
-// Definição da macro NULL para nosso ambiente bare-metal
+// Definição da macro NULL
 #define NULL ((void*)0)
 
 /**
@@ -62,4 +62,4 @@ char* strcat(char *dest, const char *src);
  */
 void itoa(int n, char* buffer);
 
-#endif // COMMON_H
+#endif

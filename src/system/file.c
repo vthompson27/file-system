@@ -62,6 +62,7 @@ int fs_touch(const char* filename) {
     uart_puts("' criado.\n");
     return 0;
 }
+
 int fs_write(const char* filename, const char* text) {
     if (strlen(filename) >= MAX_FILENAME_LEN) {
         uart_puts("Erro: Nome do arquivo muito longo.\n");

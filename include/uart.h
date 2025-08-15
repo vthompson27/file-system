@@ -53,4 +53,4 @@ void uart_puts_right_aligned(int num, int width);
  */
 void uart_puts_aligned(const char* text, int num1, int num2, const char* suffix);
 
-#endif // UART_H
+#endif

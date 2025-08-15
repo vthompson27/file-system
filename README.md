@@ -16,18 +16,22 @@ This project is a bare-metal learning environment for developing a simple file s
 .
 ├── Makefile           # Build system using arm-none-eabi toolchain
 ├── src/               # Source files
-│   ├── kernel.c       # Entry point
-│   ├── common.c       # Utility functions
-│   ├── shell.c        # Shell operation logic
-│   ├── uart.c         # UART operations
-│   ├── simplefs.c     # File system logic
-│   └── ...
+│   ├── core/          
+│   │   ├── kernel.c       
+│   │   ├── common.c      
+│   │   ├── shell.c       
+│   │   └──uart.c        
+│   └── system/          
+│        ├── dir.c       
+│        ├── file.c      
+│        └── sfs.c       
 ├── include/           # Header files
 │   └── common.h/
 │   └── shell.h/
 │   └── simplefs.h
 │   └── uart.h/
 ├── build/             # Build output directory
+├── doc/               # Documentation pdf
 ├── kernel.img         # Final image to boot on the Pi
 ├── config.txt         # Boot configuration for Pi firmware
 ├── bootcode.bin       # GPU bootloader
@@ -104,9 +108,3 @@ screen /dev/tty.usbserial-XXXXX 115200
 - [bztsrc/raspi3-tutorial](https://github.com/bztsrc/raspi3-tutorial)
 - [BCM2837 ARM Peripherals Manual](https://cs140e.sergio.bz/docs/BCM2837-ARM-Peripherals.pdf)
 - [Raspberry Pi GPIO Pinout](https://pinout.xyz/)
-
----
-
-## 📜 License
-
-MIT License
