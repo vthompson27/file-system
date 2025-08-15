@@ -1,5 +1,3 @@
-// Arquivo: src/uart.c (VERSÃO PARA MINI UART)
-
 #include "uart.h"
 #include <stdint.h>
 

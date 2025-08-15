@@ -3,7 +3,7 @@
 
 #include "fs_defs.h"
 
-// --- API do Sistema de Arquivos ---
+// API do Sistema de Arquivos
 
 void fs_format();
 void fs_mount();

@@ -9,4 +9,4 @@
  */
 void shell_start();
 
-#endif // SHELL_H
+#endif
